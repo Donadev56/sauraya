@@ -1,101 +1,334 @@
+"use client";
+
 import Image from "next/image";
+import google from "./assets/img.icons8.png";
+import styles from "./styles/pages.module.scss";
+import logo from "./assets/logo/2.png";
+import image1 from "./assets/im12.jpg";
+import image2 from "./assets/im16.jpg";
+import image3 from "./assets/ima2.jpg";
+import image9 from "./assets/im13.jpg";
+import image4 from "./assets/im4.jpg";
+import image13 from "./assets/im9.jpg";
+import { useRouter } from 'next/navigation';
+
+
+import { useCallback, useEffect, useState } from "react";
+import { SendOtp, VerifyOtp } from "./api/send-otp/opt";
+import Notification, {
+  NotificationStatus,
+  showNotification,
+} from "./components/notification";
+import { saveDataToLocal } from "./utils/saveDataToLocal";
+import { GetDataFromLocalStorage } from "./databaseManager/dataSaver";
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [images , setImages] = useState( [image3, image2, image1])
+  const [email, setEmail] = useState("");
+  const [step, setStep ] = useState(0);
+  const [lastSentDate , setLastSentdate] = useState(0)
+  const [otp, setOtp] = useState<string | undefined >();
+  const [isLoading , setIsloading] = useState(false);
+  const [isRegistered, setIsRegistered] = useState(true);
+  const router = useRouter();
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  const navigateToDashboard = useCallback(() => {
+    router.push('/pages/chat');
+  }, [router]);
+  useEffect(()=> {
+    const checkIsRegistered = async () => {
+      setIsloading(true);
+      try {
+        const savedStringData =  await GetDataFromLocalStorage("lastConnectionData")
+        if (!savedStringData) {
+          setIsRegistered(false);
+          setIsloading(false);
+          return;
+
+        }
+        
+
+        if (savedStringData) {
+           setIsRegistered(true);
+           setIsloading(false);
+           navigateToDashboard();
+         }
+
+      } catch (error) {
+        setIsloading(false);
+
+        console.error("Error while checking registration:", error);
+        showMessage("An error occurred", "error");
+        
+      }
+     }
+
+     checkIsRegistered()
+
+  }, [navigateToDashboard])
+
+  useEffect(() => {
+    const changeBackground = () => {
+      setCurrentImageIndex((prevIndex) => (prevIndex + 1) % images.length);
+    };
+
+    const interval = setInterval(changeBackground, 20000);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, [images.length]);
+
+  const showMessage = (text: string, status: NotificationStatus) => {
+    showNotification({ message: text, status: status });
+  };
+
+  const handleSendEmail = async () => {
+    setIsloading(true);
+    try {
+
+      const response = await SendOtp(email);
+      if (!response.success) { 
+        showMessage(response.response, "error");
+        setIsloading(false)
+
+        return;
+      }
+      showMessage("Email sent successfully", "success");
+      setStep(1);
+      setImages (
+        [image13 , image9 , image4]
+      )
+      setLastSentdate(Date.now() / 1000)
+      setIsloading(false);
+      
+    } catch (error) {
+      console.error("An error occurred:", error);
+      showMessage("An error occurred while trying to send the email", "error");
+      
+    }
+   }
+
+   const submitOpt = async  ()=> {
+    setIsloading(true);
+
+    try {
+      const response = await VerifyOtp(email, otp!);
+      console.log("OTP verification successful", response);
+      if (response.success) {
+        showMessage(response.response as string, "success");
+        console.log("User logged in successfully");
+        if (response.success) {
+          if (typeof response.response !== "string") {
+            const saved =  saveDataToLocal(response.response );
+            if ((await saved).success) {
+              showMessage("Data saved successfully to local storage", "success");
+              navigateToDashboard()
+            } else {
+              setIsloading(false);
+
+              showMessage("An error occurred while saving user data to local storage", "error");
+            }
+
+          }
+
+        }
+
+       
+      } else {
+        showMessage(response.response as string, "error");
+        setIsloading(false);
+      }
+      
+    } catch (error) {
+      console.error("An error occurred:", error);
+      showMessage(error as string, "error");
+      setIsloading(false);
+
+      
+    }
+
+   }
+
+
+   const handleResend = async ()=> {
+    setIsloading(true);
+    try {
+      const lasTtime = lastSentDate 
+      const timeDiff = Date.now() / 1000 - lasTtime;
+      if (timeDiff < 60) {
+        setIsloading(false)
+
+        showMessage("You can only resend the email after 1 minute", "warning");
+        return;
+      }
+
+      const response = await SendOtp(email);
+      if (!response.success) { 
+        setIsloading(false)
+
+        showMessage(response.response, "error");
+        return;
+      }
+      showMessage(response.response, "success");
+      setIsloading(false)
+      
+    } catch (error) {
+      console.error("An error occurred:", error);
+      showMessage("An error occurred while trying to resend the email", "error");
+      
+    }
+   }
+
+if (isRegistered) {
+  return (
+    <div className={styles.loaderContainer}> <div  className={styles.loader} /></div>
+  )
+}
+  return (
+    <div
+      id={styles.customBg}
+      style={{
+        backgroundImage: `url(${images[currentImageIndex].src})`,
+      }}
+      className={styles.customBg}
+    >
+      <div className={styles.toptext}>
+        <div className={styles.learnMore}>Learn more</div>
+      </div>
+      <div className={styles.middleText}>
+        <div className={styles.weltext}>Welcome to</div>
+        <div className={styles.titleText}>Sauraya AI</div>
+      </div>
+
+  {step  === 0 ?    <div className={styles.container}>
+        <div className={styles.textCenter}>
+          <Image width={120} alt="logo sauraya" src={logo} />
+
+          <p className={styles.subtitle}>Log in to continue</p>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
+
+        {/* Login Form */}
+        <form onSubmit={(e)=> {
+          e.preventDefault()
+          handleSendEmail ()
+        }} className={styles.form}>
+          <div className={styles.formGroup}>
+            <label htmlFor="email">Email</label>
+            <input onChange={(e)=> setEmail(e.target.value)} value={email} type="email" id="email" placeholder="Your email" required />
+          </div>
+
+          <button  type="submit" className={styles.submitButton}>
+            Connect
+          </button>
+        </form>
+
+        {/* Authentication with Google */}
+        <div className={styles.divider}>
+          <hr />
+          <span>OR</span>
+          <hr />
+        </div>
+
+        <button className={styles.googleButton}>
           <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
+            src={google}
+            alt="Google Logo"
+            width={20}
+            height={20}
+            className={styles.googleIcon}
           />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+          Sign in with Google
+        </button>
+      </div> : <Step2 submit={submitOpt} setOtp={setOtp} otp={otp} handleResend={handleResend} />}
+      <Notification />
+
+{isLoading &&   <div className={styles.loaderContainer}> <div  className={styles.loader} /></div>
+}
     </div>
   );
 }
+
+interface Step2Props {
+  handleResend: () => void;
+  otp: string | undefined;
+  setOtp: (value: string) => void;
+  submit: () => void;
+  
+ }
+
+const Step2 = ({handleResend , otp , setOtp , submit} : Step2Props)=> {
+  return (
+    <div className={styles.container}>
+
+         <div className={styles.textCenter}>
+          <Image width={120} alt="logo sauraya" src={logo} />
+
+          <p className={styles.subtitle}>Log in to continue</p>
+        </div>
+
+      <div className={styles.otpContainer}>
+        <div className={styles.otpTitle}>
+          Enter the OTP :
+
+        </div>
+
+          <input value={otp}  onChange={(e)=> setOtp(e.target.value)} placeholder='Enter the OTP' className={styles.optInputs} type="number" />
+          <div className={styles.buttons}>
+
+          <button onClick={handleResend}  className={styles.resend}>Re-send</button>
+          <button onClick={submit}>Submit</button>
+
+          </div>
+
+
+      </div>
+
+
+    </div>
+  )
+}
+
+
+
+
+
+function InstallPrompt() {
+  const [isIOS, setIsIOS] = useState(false)
+  const [isStandalone, setIsStandalone] = useState(false)
+ 
+  useEffect(() => {
+    setIsIOS(
+      /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream
+    )
+ 
+    setIsStandalone(window.matchMedia('(display-mode: standalone)').matches)
+  }, [])
+ 
+  if (isStandalone) {
+    return null // Don't show install button if already installed
+  }
+ 
+  return (
+    <div>
+      <h3>Install App</h3>
+      <button>Add to Home Screen</button>
+      {isIOS && (
+        <p>
+          To install this app on your iOS device, tap the share button
+          <span role="img" aria-label="share icon">
+            {' '}
+            ⎋{' '}
+          </span>
+          and then "Add to Home Screen"
+          <span role="img" aria-label="plus icon">
+            {' '}
+            ➕{' '}
+          </span>.
+        </p>
+      )}
+    </div>
+  )
+}
+ 

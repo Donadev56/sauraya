@@ -1,0 +1,49 @@
+.codeBlock {
+  position: relative;
+  background-color: #111111;
+  color: #dcdcdc;
+  border-radius: 8px;
+  font-family: "Fira Code", monospace;
+  margin-block: 30px;
+  position: relative;
+  width: 100%;
+  max-width: 900; // Assure que le conteneur ne dépasse jamais sa largeur parent
+  box-sizing: border-box;
+}
+
+.pre {
+  margin: 0;
+  display: block; // Utiliser `block` pour le préformatage
+  max-width: 90%;
+  padding: 16px;
+  overflow-x: scroll; // Défilement horizontal si nécessaire
+}
+
+.code {
+  white-space: pre; // Conserve le formatage du code
+  font-size: 14px;
+  padding: 10px;
+  max-width: 90%;
+  overflow-x: scroll; // Défilement horizontal uniquement si nécessaire
+  box-sizing: border-box;
+}
+
+/* Exemple de syntax highlighting basique */
+.topCode {
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+  padding: 10px;
+  font-size: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #343434;
+  color: #ffffff;
+}
+.item {
+  display: inline-block; // Permet aux enfants de s'aligner sur la même ligne tout en respectant le width
+  max-width: 90%; // Empêche les enfants de dépasser le parent
+  padding: 5px;
+  color: white;
+  margin: 2px;
+}

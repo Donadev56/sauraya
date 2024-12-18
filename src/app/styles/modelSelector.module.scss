@@ -1,0 +1,108 @@
+// Variables de couleur
+$background-color: #171717;
+$card-color: #212121;
+$hover-color: #343434;
+$border-radius: 12px;
+$transition-duration: 0.5s;
+
+.modelsContainer {
+  position: absolute;
+  margin-top: 22px;
+  background-color: #343434ce;
+  backdrop-filter: blur(20px);
+  top: 60%;
+  left: 50%;
+  padding: 20px;
+  border-radius: 20px;
+  animation: riseUpZoomIn 0.5s;
+  transition: all 0.5s;
+  max-width: 600px;
+  color: #ffffff;
+  overflow-y: auto;
+  max-height: 80vh;
+  transition: all $transition-duration ease;
+  z-index: 100;
+
+  @media (max-width: 600px) {
+    top: 5%;
+    width: 95%;
+  }
+}
+
+.models {
+  display: flex;
+  flex-direction: column;
+}
+
+.modelsTitle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 14px;
+  margin-bottom: 10px;
+  color: rgba(255, 255, 255, 0.577);
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(162, 162, 162, 0.127);
+
+  svg {
+    width: 28px;
+    height: 28px;
+  }
+}
+
+.modelsList {
+  display: grid;
+  overflow-y: scroll;
+  max-height: 390;
+  gap: 8px;
+}
+
+.model {
+  padding: 8px;
+
+  cursor: pointer;
+  transition:
+    background-color $transition-duration ease,
+    transform $transition-duration ease;
+
+  &:hover {
+    background-color: #21212195;
+    border-radius: 10px;
+  }
+}
+
+.modelTitle {
+  font-size: 14px;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.modelDesc {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.3;
+}
+
+@media (max-width: 600px) {
+  .modelsContainer {
+    width: 120%;
+  }
+}
+
+@media (min-width: 600px) {
+  .modelsContainer {
+    width: 160%;
+  }
+}
+
+@keyframes riseUpZoomIn {
+  0% {
+    transform: translateY(30px) scale(0.9);
+    opacity: 0;
+  }
+
+  100% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}

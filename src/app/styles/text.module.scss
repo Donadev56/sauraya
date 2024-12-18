@@ -1,0 +1,62 @@
+.normalText {
+  max-width: 100%;
+  color: rgb(
+    255,
+    255,
+    255
+  ); // Limite la largeur du texte à 90% du conteneur parent
+  word-wrap: break-word; // Force le passage à la ligne en cas de mot trop long
+  overflow-wrap: break-word; // Alternative moderne pour le passage à la ligne
+  white-space: normal; // Permet le retour à la ligne automatiquement
+}
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.phrase {
+  margin-bottom: 10px;
+}
+
+.item {
+  margin-right: 4px;
+}
+
+// Titres
+.heading1 {
+  font-size: 2em;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.heading2 {
+  font-size: 1.75em;
+  font-weight: bold;
+  margin-bottom: 6px;
+}
+
+.heading3 {
+  font-size: 1.5em;
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+
+// Citation
+.blockquote {
+  font-style: italic;
+  border-left: 4px solid #ccc;
+  padding-left: 10px;
+  margin-left: 0;
+  color: #555;
+}
+
+// Texte en gras
+.bold {
+  font-weight: bold;
+}
+
+// Texte en italique
+.italic {
+  font-style: italic;
+}
