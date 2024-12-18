@@ -1,36 +1,26 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Sauraya AI
 
-## Getting Started
+**Sauraya AI** is an open-source web interface designed to facilitate interaction with **large AI models**, specifically Facebook's **LLaMA** models via **Ollama**.
 
-First, run the development server:
+## Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- 🌐 **Web-Based Interface**: No need for manual configurations or model downloads. Simply visit [sauraya.com](https://sauraya.com) and start interacting with AI models.
+- ⚡ **Real-Time Interaction**: Utilizes WebSocket connections to communicate with models in real time through Ollama APIs.
+- 🛠️ **Built with Next.js**: Fast, modern, and scalable architecture for seamless user experience.
+- 🔒 **Privacy-Focused**: User data is stored locally. Only email addresses are saved in our databases to enhance security.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## How It Works
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. **Visit the Platform**: Go to [sauraya.com](https://sauraya.com).
+2. **Interact Instantly**: Chat with AI models without downloading large datasets.
+3. **Stay Secure**: Your interactions remain private with local storage, while emails are securely stored to reinforce security measures.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Open Source & Free
 
-## Learn More
+Sauraya AI is completely **open source** and **free to use**. Contribute or explore the project on [opennode.tech](https://opennode.tech).
 
-To learn more about Next.js, take a look at the following resources:
+## Get Started
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Visit [sauraya.com](https://sauraya.com) and experience AI-powered interactions effortlessly!
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
